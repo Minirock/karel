@@ -2,13 +2,52 @@ open Common
 open Quad
 
 (** Tapez votre programme ici. *)
+
+(*
 let prog = [
-	(* adresse 00 *)		STOP
-	(* adresse 01 *)
-	(* adresse 02 *)
-	(* adresse 03 *)
-	(* ... *)
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	STOP
 ]
+*)
+
+(*
+let prog = [
+	SETI(0,5);
+	SETI(1,1);
+	SETI(2,1);
+	(*Se retourne*)
+	INVOKE(Karel.turn_left,0,0);
+	INVOKE(Karel.turn_left,0,0);
+	INVOKE(Karel.move,0,0);
+	ADD(1,1,2);
+	GOTO_LT(5,1,0);
+	STOP
+]
+*)
+
+let prog = [
+	
+	INVOKE(Karel.put_beeper,0,0);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.move,0,0);
+	(*Se retourne*)
+	INVOKE(Karel.turn_left,0,0);
+	INVOKE(Karel.turn_left,0,0);
+	(*Cherche le beeper*)
+	SETI(0,0);
+	SETI(1,1);
+	INVOKE(Karel.move,0,0);
+	INVOKE(Karel.next_beeper,0,0);
+	GOTO_EQ(13,0,1);
+	GOTO_EQ(9,0,0);
+	STOP
+]
+
 
 (*** traitement des options et interprétation ***)
 
