@@ -17,9 +17,9 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"BEGIN"						{ BEGIN }
 |		"END"						{ END }
 
-|		"pickbeeper"				{ scan lexbuf }
-|		"putbeeper"					{ scan lexbuf }
-|		"next-to-a-beeper"			{ scan lexbuf } 
+|		"pickbeeper"				{ PICK_BEEPER }
+|		"putbeeper"					{ PUT_BEEPER }
+|		"next-to-a-beeper"			{ NEXT_TO_A_BEEPER } 
 
 
 

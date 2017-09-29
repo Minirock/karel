@@ -21,6 +21,10 @@ open Karel
 %token BEGIN
 %token END
 
+%token PICK_BEEPER
+%token PUT_BEEPER
+%token NEXT_TO_A_BEEPER
+
 %type <unit> prog
 %start prog
 
