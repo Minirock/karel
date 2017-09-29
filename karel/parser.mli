@@ -9,6 +9,9 @@ type token =
   | SEMI
   | BEGIN
   | END
+  | PICK_BEEPER
+  | PUT_BEEPER
+  | NEXT_TO_A_BEEPER
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit

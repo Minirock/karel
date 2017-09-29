@@ -58,6 +58,10 @@ simple_stmt: TURN_LEFT
 				{ gen STOP  }
 |			MOVE
 				{ gen (INVOKE (move, 0, 0)) }
+|			PICK_BEEPER
+				{ gen (INVOKE (pick_beeper, 0, 0)) }
+|			PUT_BEEPER
+				{ gen (INVOKE (put_beeper, 0, 0)) }
 ;
 
 

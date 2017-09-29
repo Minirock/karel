@@ -148,5 +148,5 @@ state 16
 	.  reduce 5
 
 
-13 terminals, 7 nonterminals
+16 terminals, 7 nonterminals
 12 grammar rules, 17 states
