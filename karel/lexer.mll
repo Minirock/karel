@@ -2,6 +2,7 @@
 open Parser
 }
 
+let entier = ['0'-'9']+
 let comment = '{' [^ '}']* '}'
 let space = [' ' '\t' '\n']+
 
@@ -16,9 +17,15 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"BEGIN"						{ BEGIN }
 |		"END"						{ END }
 
+|		"pickbeeper"				{ scan lexbuf }
+|		"putbeeper"					{ scan lexbuf }
+|		"next-to-a-beeper"			{ scan lexbuf } 
+
+
+
 |		";"							{ SEMI }
 
-
+|		entier						{ scan lexbuf }
 |		space						{ scan lexbuf }
 |		comment						{ scan lexbuf }
 |		_ as c						{ raise (Common.LexerError (Printf.sprintf "unknown character '%c'" c)) }
