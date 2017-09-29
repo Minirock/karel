@@ -25,6 +25,8 @@ open Karel
 %token PUT_BEEPER
 %token NEXT_TO_A_BEEPER
 
+%token <int> INT
+
 %type <unit> prog
 %start prog
 

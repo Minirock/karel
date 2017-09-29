@@ -12,6 +12,7 @@ type token =
   | PICK_BEEPER
   | PUT_BEEPER
   | NEXT_TO_A_BEEPER
+  | INT of (int)
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit

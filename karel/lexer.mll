@@ -25,7 +25,7 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 
 |		";"							{ SEMI }
 
-|		entier						{ scan lexbuf }
+|		entier as e						{ INT(int_of_string(e)) }
 |		space						{ scan lexbuf }
 |		comment						{ scan lexbuf }
 |		_ as c						{ raise (Common.LexerError (Printf.sprintf "unknown character '%c'" c)) }
