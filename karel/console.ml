@@ -28,6 +28,7 @@ let prog = [
 ]
 *)
 
+(*
 let prog = [
 	
 	INVOKE(Karel.put_beeper,0,0);
@@ -45,6 +46,39 @@ let prog = [
 	INVOKE(Karel.next_beeper,0,0);
 	GOTO_EQ(13,0,1);
 	GOTO_EQ(9,0,0);
+	STOP
+]
+*)
+
+let prog = [
+	(*Cherche s'il y a un mur*)
+	(*false*)
+	SETI(0,0);
+	(*true*)
+	SETI(1,1);
+	(*mur ?*)
+	SETI(2,0);
+	(*beeper ?*)
+	SETI(3,0);
+	INVOKE(karel.is_clear,karel.front,2);
+	(*Si un mur*)
+	GOTO_EQ(7,2,0);
+	(*Si pas de mur*)
+	GOTO_EQ(13,2,1);
+	(*ouest*)
+	INVOKE(Karel.turn_left,0,0);
+	INVOKE(Karel.move,0,0);
+	(*sud*)
+	INVOKE(Karel.turn_left,0,0);
+	INVOKE(Karel.next_beeper,3,0);
+	(*S'il y a un beeper*)
+	GOTO_EQ(15,3,1);
+	GOTO_EQ(4,3,0);
+	(*On avance si pas de mur*)
+	INVOKE(Karel.move,0,0);
+	GOTO(10);
+	(*On ramasse le beeper et on termine*)
+	INVOKE(karel.pick_beeper,0,0);
 	STOP
 ]
 
