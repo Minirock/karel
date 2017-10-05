@@ -53,32 +53,47 @@ let prog = [
 let prog = [
 	(*Cherche s'il y a un mur*)
 	(*false*)
-	SETI(0,0);
+	SETI(0,0); 
 	(*true*)
-	SETI(1,1);
-	(*mur ?*)
-	SETI(2,0);
+	SETI(1,1); 
+	(*mur ?*) 
+	SETI(2,0); 
 	(*beeper ?*)
-	SETI(3,0);
-	INVOKE(karel.is_clear,karel.front,2);
+	SETI(3,0); 
+	(*GAUCHE OU DROITE*)
+	SETI(4,0);
+	INVOKE(karel.is_clear,karel.front,2); 
 	(*Si un mur*)
-	GOTO_EQ(7,2,0);
+	GOTO_EQ(8,2,0); 
 	(*Si pas de mur*)
-	GOTO_EQ(13,2,1);
+	GOTO_EQ(22,2,1); 
+	(*droite ou gauche ? *)
+	GOTO_EQ(10,4,0);
+	GOTO_EQ(15,4,1);
 	(*ouest*)
-	INVOKE(Karel.turn_left,0,0);
-	INVOKE(Karel.move,0,0);
+	INVOKE(karel.turn_left,0,0); 
+	INVOKE(karel.move,0,0); 
 	(*sud*)
-	INVOKE(Karel.turn_left,0,0);
-	INVOKE(Karel.next_beeper,3,0);
-	(*S'il y a un beeper*)
-	GOTO_EQ(15,3,1);
-	GOTO_EQ(4,3,0);
+	INVOKE(karel.turn_left,0,0);  
+	SETI(4,1);
+	(*On check beeper*)
+	GOTO(19);
+	(*est*)
+	INVOKE(karel.turn_right,0,0); 
+	INVOKE(karel.move,0,0); 
+	(*nord*)
+	INVOKE(karel.turn_right,0,0); 
+	SETI(4,0);
+
+	INVOKE(karel.next_beeper,3,0);
+	(*S'il y a un beeper fini sinon on boucle*)
+	GOTO_EQ(24,3,1); 
+	GOTO_EQ(5,3,0); 
 	(*On avance si pas de mur*)
-	INVOKE(Karel.move,0,0);
-	GOTO(10);
+	INVOKE(karel.move,0,0);
+	GOTO(19); 
 	(*On ramasse le beeper et on termine*)
-	INVOKE(karel.pick_beeper,0,0);
+	INVOKE(karel.pick_beeper,0,0); 
 	STOP
 ]
 
