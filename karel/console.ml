@@ -66,7 +66,7 @@ let prog = [
 	(*Si un mur*)
 	GOTO_EQ(8,2,0); 
 	(*Si pas de mur*)
-	GOTO_EQ(22,2,1); 
+	GOTO_EQ(26,2,1); 
 	(*droite ou gauche ? *)
 	GOTO_EQ(10,4,0);
 	GOTO_EQ(15,4,1);
