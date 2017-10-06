@@ -69,22 +69,22 @@ stmt:		simple_stmt
 				{ () }
 ;
 
-test:		FRONT_IS_CLEAR
-|			FRONT_IS_BLOCKED
-|			LEFT_IS_CLEAR
-|			LEFT_IS_BLOCKED
-|			RIGHT_IS_CLEAR
-|			RIGHT_IS_BLOCKED
-|			NEXT_TO_A_BEEPER
-|			NOT_NEXT_TO_A_BEEPER
-|			FACING_NORTH
-|			NOT_FACING_NORTH
-|			FACING_SOUTH
-|			NOT_FACING_SOUTH
-|			FACING_EAST
-|			NOT_FACING_EAST
-|			FACING_WEST
-|			NOT_FACING_WEST
+test:			FRONT_IS_CLEAR 		{ () }
+|			FRONT_IS_BLOCKED	{ () }
+|			LEFT_IS_CLEAR		{ () }
+|			LEFT_IS_BLOCKED		{ () }
+|			RIGHT_IS_CLEAR		{ () }
+|			RIGHT_IS_BLOCKED	{ () }
+|			NEXT_TO_A_BEEPER	{ () }
+|			NOT_NEXT_TO_A_BEEPER	{ () }
+|			FACING_NORTH		{ () }
+|			NOT_FACING_NORTH	{ () }
+|			FACING_SOUTH		{ () }
+|			NOT_FACING_SOUTH	{ () }
+|			FACING_EAST		{ () }
+|			NOT_FACING_EAST		{ () }
+|			FACING_WEST		{ () }
+|			NOT_FACING_WEST		{ () }
 ;
 
 

@@ -11,13 +11,30 @@
 
    7  stmt : simple_stmt
 
-   8  simple_stmt : TURN_LEFT
-   9              | TURN_OFF
-  10              | MOVE
-  11              | PICK_BEEPER
-  12              | PUT_BEEPER
+   8  test : FRONT_IS_CLEAR
+   9       | FRONT_IS_BLOCKED
+  10       | LEFT_IS_CLEAR
+  11       | LEFT_IS_BLOCKED
+  12       | RIGHT_IS_CLEAR
+  13       | RIGHT_IS_BLOCKED
+  14       | NEXT_TO_A_BEEPER
+  15       | NOT_NEXT_TO_A_BEEPER
+  16       | FACING_NORTH
+  17       | NOT_FACING_NORTH
+  18       | FACING_SOUTH
+  19       | NOT_FACING_SOUTH
+  20       | FACING_EAST
+  21       | NOT_FACING_EAST
+  22       | FACING_WEST
+  23       | NOT_FACING_WEST
 
-  13  %entry% : '\001' prog
+  24  simple_stmt : TURN_LEFT
+  25              | TURN_OFF
+  26              | MOVE
+  27              | PICK_BEEPER
+  28              | PUT_BEEPER
+
+  29  %entry% : '\001' prog
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -29,7 +46,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . prog  (13)
+	%entry% : '\001' . prog  (29)
 
 	BEGIN_PROG  shift 3
 	.  error
@@ -51,9 +68,9 @@ state 3
 
 
 state 4
-	%entry% : '\001' prog .  (13)
+	%entry% : '\001' prog .  (29)
 
-	.  reduce 13
+	.  reduce 29
 
 
 state 5
@@ -74,33 +91,33 @@ state 5
 
 
 state 6
-	simple_stmt : MOVE .  (10)
+	simple_stmt : MOVE .  (26)
 
-	.  reduce 10
+	.  reduce 26
 
 
 state 7
-	simple_stmt : TURN_LEFT .  (8)
+	simple_stmt : TURN_LEFT .  (24)
 
-	.  reduce 8
+	.  reduce 24
 
 
 state 8
-	simple_stmt : TURN_OFF .  (9)
+	simple_stmt : TURN_OFF .  (25)
 
-	.  reduce 9
+	.  reduce 25
 
 
 state 9
-	simple_stmt : PICK_BEEPER .  (11)
+	simple_stmt : PICK_BEEPER .  (27)
 
-	.  reduce 11
+	.  reduce 27
 
 
 state 10
-	simple_stmt : PUT_BEEPER .  (12)
+	simple_stmt : PUT_BEEPER .  (28)
 
-	.  reduce 12
+	.  reduce 28
 
 
 state 11
@@ -166,5 +183,24 @@ state 18
 	.  reduce 5
 
 
-17 terminals, 7 nonterminals
-14 grammar rules, 19 states
+Rules never reduced:
+	test : FRONT_IS_CLEAR  (8)
+	test : FRONT_IS_BLOCKED  (9)
+	test : LEFT_IS_CLEAR  (10)
+	test : LEFT_IS_BLOCKED  (11)
+	test : RIGHT_IS_CLEAR  (12)
+	test : RIGHT_IS_BLOCKED  (13)
+	test : NEXT_TO_A_BEEPER  (14)
+	test : NOT_NEXT_TO_A_BEEPER  (15)
+	test : FACING_NORTH  (16)
+	test : NOT_FACING_NORTH  (17)
+	test : FACING_SOUTH  (18)
+	test : NOT_FACING_SOUTH  (19)
+	test : FACING_EAST  (20)
+	test : NOT_FACING_EAST  (21)
+	test : FACING_WEST  (22)
+	test : NOT_FACING_WEST  (23)
+
+
+34 terminals, 8 nonterminals
+30 grammar rules, 19 states
