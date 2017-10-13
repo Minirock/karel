@@ -43,14 +43,29 @@ open Karel
 %token ANY_BEEPERS_IN_BEEPER_BAG
 %token NO_BEEPERS_IN_BEEPER_BAG
 
+%token ITERATE
+%token TIMES
+
+%token WHILE
+%token DO
+
+%token IF
+%token THEN
+
+%token <string> ID
+
+
 %token <int> INT
+
+%token DEFINE_NEW_INSTRUCTION
+%token AS
 
 %type <unit> prog
 %start prog
 
 %%
 
-prog:	BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC END_PROG
+prog:	BEGIN_PROG sous_prog BEGIN_EXEC stmts_opt END_EXEC END_PROG
 			{ () }
 ;
 
@@ -65,9 +80,37 @@ stmts:		stmt			{ () }
 |			stmts SEMI		{ () }
 ;
 
-stmt:		simple_stmt
-				{ () }
+stmt:		simple_stmt	{ () }
+|		iterate		{ () }
+|		whil		{ () }
+|		if_sans_else	{ () }
+|		ID		{ () }
 ;
+
+iterate:	ITERATE	INT TIMES BEGIN stmts END { () }
+|		ITERATE	INT TIMES stmt	{ () }
+|		ITERATE INT TIMES iterate { () }
+;
+
+
+whil: 		WHILE test DO stmt	{ () }
+|		WHILE test DO BEGIN stmts END { () }
+|		WHILE test DO whil	{ () }
+;
+
+
+if_sans_else:	IF test THEN stmt	{ () }
+|		IF test THEN BEGIN stmts END { () }
+|		IF test THEN if_sans_else { () }
+;
+
+define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { () }
+;
+
+sous_prog:	define_new sous_prog	{ () }
+|		{ () }
+;
+
 
 test:			FRONT_IS_CLEAR 		{ () }
 |			FRONT_IS_BLOCKED	{ () }
