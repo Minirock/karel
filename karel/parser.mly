@@ -51,6 +51,7 @@ open Karel
 
 %token IF
 %token THEN
+%token ELSE
 
 %token <string> ID
 
@@ -100,7 +101,12 @@ if_sans_else:	IF test THEN stmt	{ () }
 |		IF test THEN BEGIN stmts END { () }
 ;
 
-define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { () }
+if_else:	IF test THEN stmt ELSE stmt { () }
+|			IF test THEN BEGIN stmts END ELSE BEGIN stmts END { () }
+;
+
+
+define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { (if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") else define $2 0) }
 ;
 
 sous_prog:	define_new sous_prog	{ () }

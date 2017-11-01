@@ -48,6 +48,7 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 
 |		"IF"				{ IF	}
 |		"THEN"				{ THEN  }
+|		"ELSE"				{ ELSE }
 
 |		"DEFINE-NEW-INSTRUCTION"	{ DEFINE_NEW_INSTRUCTION }
 |		"AS"				{ AS }
