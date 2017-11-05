@@ -83,30 +83,34 @@ stmts:		stmt			{ () }
 stmt:		simple_stmt	{ () }
 |		iterate		{ () }
 |		whil		{ () }
-|		if_sans_else	{ () }
-|		ID		{ () }
+|		IF test THEN stmt	{ () }	
+|		IF test THEN stmt_special ELSE stmt_special { () }
 ;
 
-iterate:	ITERATE	INT TIMES BEGIN stmts END { () }
-|		ITERATE	INT TIMES stmt	{ () }
+stmt_special:	simple_stmt	{ () }
+|		iterate_special		{ () }
+|		whil_special		{ () }
+|		IF test THEN stmt_special ELSE stmt_special { () }
 ;
 
+iterate:	ITERATE	INT TIMES stmt	{ () }
+;
+
+iterate_special:	ITERATE	INT TIMES stmt_special	{ () }
+;
 
 whil: 		WHILE test DO stmt	{ () }
-|		WHILE test DO BEGIN stmts END { () }
+;
+
+whil_special:WHILE test DO stmt_special	{ () }
 ;
 
 
-if_sans_else:	IF test THEN stmt	{ () }
-|		IF test THEN BEGIN stmts END { () }
-;
 
-if_else:	IF test THEN stmt ELSE stmt { () }
-|			IF test THEN BEGIN stmts END ELSE BEGIN stmts END { () }
-;
-
-
-define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { (if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") else define $2 0) }
+define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { 
+					if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") 
+					else define $2 0
+				}
 ;
 
 sous_prog:	define_new sous_prog	{ () }
@@ -133,7 +137,8 @@ test:			FRONT_IS_CLEAR 		{ () }
 ;
 
 
-simple_stmt: TURN_LEFT
+simple_stmt:BEGIN stmts END   { () } 
+|			TURN_LEFT
 				{ gen (INVOKE (turn_left, 0, 0)) }
 |			TURN_OFF
 				{ gen STOP  }
@@ -143,6 +148,5 @@ simple_stmt: TURN_LEFT
 				{ gen (INVOKE (pick_beeper, 0, 0)) }
 |			PUT_BEEPER
 				{ gen (INVOKE (put_beeper, 0, 0)) }
+|			ID		{ () }
 ;
-
-
