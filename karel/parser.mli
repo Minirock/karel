@@ -35,6 +35,7 @@ type token =
   | DO
   | IF
   | THEN
+  | ELSE
   | ID of (string)
   | INT of (int)
   | DEFINE_NEW_INSTRUCTION

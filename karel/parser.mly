@@ -83,28 +83,33 @@ stmts:		stmt			{ () }
 stmt:		simple_stmt	{ () }
 |		iterate		{ () }
 |		whil		{ () }
-|		IF test THEN stmt	{ () }	
-|		IF test THEN stmt_special ELSE stmt_special { () }
+|		IF if_test THEN stmt	{ backpatch $2 (nextquad()) }	
+|		IF if_test THEN stmt_special ELSE stmt_special { () }
 ;
 
 stmt_special:	simple_stmt	{ () }
 |		iterate_special		{ () }
 |		whil_special		{ () }
-|		IF test THEN stmt_special ELSE stmt_special { () }
+|		IF if_test THEN stmt_special ELSE stmt_special { () }
 ;
 
-iterate:	ITERATE	INT TIMES stmt	{ () }
+iterate:	ITERATE	INT TIMES stmt	{
+				 ()
+				}	
 ;
 
-iterate_special:	ITERATE	INT TIMES stmt_special	{ () }
+iterate_special:	ITERATE	INT TIMES stmt_special	{ ()
+				}
 ;
 
-whil: 		WHILE test DO stmt	{ () }
+whil: 		WHILE cut while_test DO stmt	{ let _ = gen(GOTO($2)) in backpatch $3 (nextquad()) }
 ;
 
-whil_special:WHILE test DO stmt_special	{ () }
+
+whil_special:WHILE cut while_test DO stmt_special	{ let _ = gen(GOTO($2)) in backpatch $3 (nextquad()) }
 ;
 
+cut: { nextquad() }
 
 
 define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { 
@@ -118,22 +123,22 @@ sous_prog:	define_new sous_prog	{ () }
 ;
 
 
-test:			FRONT_IS_CLEAR 		{ () }
-|			FRONT_IS_BLOCKED	{ () }
-|			LEFT_IS_CLEAR		{ () }
-|			LEFT_IS_BLOCKED		{ () }
-|			RIGHT_IS_CLEAR		{ () }
-|			RIGHT_IS_BLOCKED	{ () }
-|			NEXT_TO_A_BEEPER	{ () }
-|			NOT_NEXT_TO_A_BEEPER	{ () }
-|			FACING_NORTH		{ () }
-|			NOT_FACING_NORTH	{ () }
-|			FACING_SOUTH		{ () }
-|			NOT_FACING_SOUTH	{ () }
-|			FACING_EAST		{ () }
-|			NOT_FACING_EAST		{ () }
-|			FACING_WEST		{ () }
-|			NOT_FACING_WEST		{ () }
+test:			FRONT_IS_CLEAR 		{ let b=new_temp() in gen(INVOKE(is_clear,front,b));b }
+|			FRONT_IS_BLOCKED	{ let b=new_temp() in gen(INVOKE(is_blocked,front,b));b }
+|			LEFT_IS_CLEAR		{let b=new_temp() in gen(INVOKE(is_clear,left,b));b }
+|			LEFT_IS_BLOCKED		{let b=new_temp() in gen(INVOKE(is_blocked,left,b));b }
+|			RIGHT_IS_CLEAR		{let b=new_temp() in gen(INVOKE(is_clear,right,b));b }
+|			RIGHT_IS_BLOCKED	{let b=new_temp() in gen(INVOKE(is_blocked,right,b));b }
+|			NEXT_TO_A_BEEPER	{let a=new_temp() in gen(INVOKE(next_beeper,a,0));a }
+|			NOT_NEXT_TO_A_BEEPER	{let a=new_temp() in gen(INVOKE(no_next_beeper,a,0));a}	
+|			FACING_NORTH		{let b=new_temp() in gen(INVOKE(facing,north,b));b }
+|			NOT_FACING_NORTH	{let b=new_temp() in gen(INVOKE(not_facing,north,b));b }
+|			FACING_SOUTH		{let b=new_temp() in gen(INVOKE(facing,south,b));b }
+|			NOT_FACING_SOUTH	{let b=new_temp() in gen(INVOKE(not_facing,south,b));b }
+|			FACING_EAST		{let b=new_temp() in gen(INVOKE(facing,east,b));b }
+|			NOT_FACING_EAST		{let b=new_temp() in gen(INVOKE(not_facing,east,b));b }
+|			FACING_WEST		{let b=new_temp() in gen(INVOKE(facing,west,b));b }
+|			NOT_FACING_WEST		{let b=new_temp() in gen(INVOKE(not_facing,west,b));b }
 ;
 
 
@@ -150,3 +155,22 @@ simple_stmt:BEGIN stmts END   { () }
 				{ gen (INVOKE (put_beeper, 0, 0)) }
 |			ID		{ () }
 ;
+
+if_test: test
+	{ let v = new_temp() in
+	  let _ = gen(SETI(v,0)) in
+	  let a = nextquad() in
+	  let _ = gen(GOTO_EQ(0,$1,v)) in
+	  a
+	}
+;
+
+while_test: test
+	{ let v = new_temp() in
+	  let _ = gen(SETI(v,0)) in
+	  let a = nextquad() in
+	  let _ = gen(GOTO_EQ(0,$1,v)) in
+	  a
+	}
+;
+
