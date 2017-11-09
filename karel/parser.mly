@@ -94,11 +94,24 @@ stmt_special:	simple_stmt	{ () }
 ;
 
 iterate:	ITERATE	INT TIMES stmt	{
-				 ()
+				 let i = new_temp() in
+		  		 let n = new_temp() in
+		  		 let _ = gen(SETI(i,0)) in
+		  		 let _ = gen(SETI(n,$2)) in
+		  		 let a = nextquad() in
+		  		 let _ = gen(GOTO_GE(0,i,n)) in 
+		  		 (i,a) 
 				}	
 ;
 
-iterate_special:	ITERATE	INT TIMES stmt_special	{ ()
+iterate_special:	ITERATE	INT TIMES stmt_special	{ 
+				 let i = new_temp() in
+		  		 let n = new_temp() in
+		  		 let _ = gen(SETI(i,0)) in
+		  		 let _ = gen(SETI(n,$2)) in
+		  		 let a = nextquad() in
+		  		 let _ = gen(GOTO_GE(0,i,n)) in 
+		  		 (i,a)
 				}
 ;
 
