@@ -125,11 +125,14 @@ whil_special:WHILE cut while_test DO stmt_special	{ let _ = gen(GOTO($2)) in bac
 cut: { nextquad() }
 
 
-define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts { 
+define_new:	DEFINE_NEW_INSTRUCTION ID AS{ 
 					if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") 
-					else define $2 0
+					else define $2 { nextquad() }
 				}
 ;
+
+define:		define_new stmts
+				{ gen RETURN };
 
 sous_prog:	define_new sous_prog	{ () }
 |		{ () }
@@ -166,7 +169,9 @@ simple_stmt:BEGIN stmts END   { () }
 				{ gen (INVOKE (pick_beeper, 0, 0)) }
 |			PUT_BEEPER
 				{ gen (INVOKE (put_beeper, 0, 0)) }
-|			ID		{ () }
+|			ID		{  if is_defined $1 
+					then gen (CALL (get_define $1)) 
+					else raise(SyntaxError "undefined")  }
 ;
 
 if_test: test
