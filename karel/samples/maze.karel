@@ -6,9 +6,9 @@ BEGINNING-OF-PROGRAM
   BEGINNING-OF-EXECUTION
     WHILE not-next-to-a-beeper DO
       BEGIN
-        IF right-is-clear
-          THEN turnright
-          ELSE
+        IF right-is-clear THEN 
+          turnright
+        ELSE
             WHILE front-is-blocked DO
               turnleft;
         move

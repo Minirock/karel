@@ -5,6 +5,16 @@ open Common
 open Comp
 open Karel
 
+let iteration (i, a) =
+	let t = new_temp () in
+	gen (SETI (t, 1));
+	gen (ADD (i, i, t));
+	gen (GOTO (a));
+	backpatch a (nextquad())
+
+let boucle (i, a) =
+	gen (GOTO i);
+	backpatch a (nextquad ())
 
 %}
 
@@ -66,8 +76,15 @@ open Karel
 
 %%
 
-prog:	BEGIN_PROG sous_prog BEGIN_EXEC stmts_opt END_EXEC END_PROG
+prog:	BEGIN_PROG initial_goto sous_prog BEGIN_EXEC destination stmts_opt END_EXEC END_PROG
 			{ () }
+;
+
+
+initial_goto:				{ gen (GOTO 0) }
+;
+
+destination:				{ backpatch 0 (nextquad ()) }
 ;
 
 
@@ -75,71 +92,80 @@ stmts_opt:	/* empty */		{ () }
 |			stmts			{ () }
 ;
 
+
+define_new:	DEFINE_NEW_INSTRUCTION ID AS { 
+					if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") 
+					else define $2 (nextquad())
+				}
+;
+
+define:		define_new stmts
+				{ gen RETURN }
+;
+
+sous_prog:	define sous_prog	{ () }
+|		{ () }
+;
+
 stmts:		stmt			{ () }
 |			stmts SEMI stmt	{ () }
 |			stmts SEMI		{ () }
 ;
 
-stmt:		simple_stmt	{ () }
-|		iterate		{ () }
-|		whil		{ () }
-|		IF if_test THEN stmt	{ backpatch $2 (nextquad()) }	
-|		IF if_test THEN stmt_special ELSE stmt_special { () }
+stmt:		simple_stmt									{ () }
+|		iterate_times	stmt 							{ iteration $1 }
+|		while_test	stmt								{ boucle $1 }
+|		IF if_test THEN stmt							{ backpatch $2 (nextquad()) }	
+|		IF if_test THEN stmt_special if_cut ELSE cut stmt_special 	{ let _ = backpatch $5 (nextquad()) in backpatch $2 $7 }
 ;
 
-stmt_special:	simple_stmt	{ () }
-|		iterate_special		{ () }
-|		whil_special		{ () }
-|		IF if_test THEN stmt_special ELSE stmt_special { () }
+stmt_special:	simple_stmt								{ () }
+|		iterate_times stmt_special						{ iteration $1 }
+|		while_test stmt_special							{ boucle $1 }
+|		IF if_test THEN stmt_special if_cut ELSE cut stmt_special 	{ let _ = backpatch $5 (nextquad()) in backpatch $2 $7 }
 ;
 
-iterate:	ITERATE	INT TIMES stmt	{
-				 let i = new_temp() in
-		  		 let n = new_temp() in
-		  		 let _ = gen(SETI(i,0)) in
-		  		 let _ = gen(SETI(n,$2)) in
-		  		 let a = nextquad() in
-		  		 let _ = gen(GOTO_GE(0,i,n)) in 
-		  		 (i,a) 
-				}	
+if_cut:	{ let a =nextquad() in let _ = gen(GOTO(0)) in a }
 ;
 
-iterate_special:	ITERATE	INT TIMES stmt_special	{ 
-				 let i = new_temp() in
-		  		 let n = new_temp() in
-		  		 let _ = gen(SETI(i,0)) in
-		  		 let _ = gen(SETI(n,$2)) in
-		  		 let a = nextquad() in
-		  		 let _ = gen(GOTO_GE(0,i,n)) in 
-		  		 (i,a)
-				}
+if_test: test { 
+		let v = new_temp() in
+	  	let _ = gen(SETI(v,0)) in
+	  	let a = nextquad() in
+	  	let _ = gen(GOTO_EQ(0,$1,v)) in
+	  	a
+	}
 ;
 
-whil: 		WHILE cut while_test DO stmt	{ let _ = gen(GOTO($2)) in backpatch $3 (nextquad()) }
+iterate_times:	ITERATE	INT TIMES {
+				let i = new_temp() in
+		  		let n = new_temp() in
+		  		let _ = gen(SETI(i,0)) in
+		  		let _ = gen(SETI(n,$2)) in
+		  		let a = nextquad() in
+		  		let _ = gen(GOTO_GE(0,i,n)) in 
+		  		(i,a) 
+			}	
 ;
 
 
-whil_special:WHILE cut while_test DO stmt_special	{ let _ = gen(GOTO($2)) in backpatch $3 (nextquad()) }
+while_test: 	WHILE cut test DO { 
+				let t = new_temp () in
+				let _ = gen (SETI (t, 0)) in
+				let a = nextquad () in
+				let _ = gen (GOTO_EQ (0, $3, t)) in
+				($2, a) 
+			}
 ;
+
 
 cut: { nextquad() }
 
 
-define_new:	DEFINE_NEW_INSTRUCTION ID AS{ 
-					if is_defined $2 then raise (SyntaxError "un sous programme est declaré 2 fois") 
-					else define $2 { nextquad() }
-				}
-;
-
-define:		define_new stmts
-				{ gen RETURN };
-
-sous_prog:	define_new sous_prog	{ () }
-|		{ () }
-;
 
 
-test:			FRONT_IS_CLEAR 		{ let b=new_temp() in gen(INVOKE(is_clear,front,b));b }
+
+test:		FRONT_IS_CLEAR 		{ let b=new_temp() in gen(INVOKE(is_clear,front,b));b }
 |			FRONT_IS_BLOCKED	{ let b=new_temp() in gen(INVOKE(is_blocked,front,b));b }
 |			LEFT_IS_CLEAR		{let b=new_temp() in gen(INVOKE(is_clear,left,b));b }
 |			LEFT_IS_BLOCKED		{let b=new_temp() in gen(INVOKE(is_blocked,left,b));b }
@@ -158,7 +184,7 @@ test:			FRONT_IS_CLEAR 		{ let b=new_temp() in gen(INVOKE(is_clear,front,b));b }
 ;
 
 
-simple_stmt:BEGIN stmts END   { () } 
+simple_stmt: BEGIN stmts END   { () } 
 |			TURN_LEFT
 				{ gen (INVOKE (turn_left, 0, 0)) }
 |			TURN_OFF
@@ -173,22 +199,3 @@ simple_stmt:BEGIN stmts END   { () }
 					then gen (CALL (get_define $1)) 
 					else raise(SyntaxError "undefined")  }
 ;
-
-if_test: test
-	{ let v = new_temp() in
-	  let _ = gen(SETI(v,0)) in
-	  let a = nextquad() in
-	  let _ = gen(GOTO_EQ(0,$1,v)) in
-	  a
-	}
-;
-
-while_test: test
-	{ let v = new_temp() in
-	  let _ = gen(SETI(v,0)) in
-	  let a = nextquad() in
-	  let _ = gen(GOTO_EQ(0,$1,v)) in
-	  a
-	}
-;
-
